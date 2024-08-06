@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	_ "github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"os/exec"
 )

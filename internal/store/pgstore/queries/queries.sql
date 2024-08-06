@@ -9,11 +9,12 @@ WHERE ID = $1;
 SELECT
     "id",
     "theme"
-FROM rooms
+FROM rooms;
 
---name: InsertRoom :one
-INSERT INTO rooms("theme")
-VALUES($1)
+-- name: InsertRoom :one
+INSERT INTO rooms
+    ( "theme" ) VALUES
+    ( $1 )
 RETURNING "id";
 
 -- name: GetMessage :one
@@ -37,24 +38,25 @@ FROM messages
 WHERE room_id = $1;
 
 -- name: InsertMessage :one
-INSERT INTO messages("room_id", "message")
-VALUES($1, $2)
+INSERT INTO messages
+    ( "room_id", "message" ) VALUES
+    ( $1, $2 )
 RETURNING "id";
 
 -- name: ReactToMessage :one
 UPDATE messages
 SET reaction_count = reaction_count + 1
-WHERE id = $1;
+WHERE id = $1
 RETURNING reaction_count;
 
 -- name: RemoveReactionFromMessage :one
 UPDATE messages
 SET reaction_count = reaction_count - 1
-WHERE id = $1;
+WHERE id = $1
 RETURNING reaction_count;
 
 -- name: MarkMessageAsAnswered :one
 UPDATE messages
 SET answered = true
-WHERE id = $1;
+WHERE id = $1
 RETURNING answered;
