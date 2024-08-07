@@ -21,7 +21,7 @@ func main() {
 	ctx := context.Background()
 
 	pool, err := pgxpool.New(ctx, fmt.Sprintf(
-		"users=%s password=%s dbname=%s host=%s port=%d",
+		"user=%s password=%s dbname=%s host=%s port=%d",
 		dbConfig.Username, dbConfig.Password, dbConfig.Name, dbConfig.Host, dbConfig.Port,
 	))
 
