@@ -12,9 +12,12 @@ type apiHandler struct {
 }
 
 func (h apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
+	h.r.ServeHTTP(w, r)
 }
 
 func NewHandler(q *pgstore.Queries) http.Handler {
-
+	a := apiHandler{q: q}
+	r := chi.NewRouter()
+	a.r = r
+	return a
 }
