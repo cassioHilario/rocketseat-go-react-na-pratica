@@ -11,11 +11,8 @@ export function CreateMessageForm() {
         throw new Error("CreateMessageForm component must be used within a Room page");
     }
 
-    console.log(roomId)
-
     async function createMessageAction(data: FormData) {
       const message = data.get('question')?.toString()
-      console.log(message)
       
       if (!message || message.trim() === '' || !roomId) {
           return

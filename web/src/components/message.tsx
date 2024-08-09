@@ -1,83 +1,81 @@
 import { ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { createMessageReaction, deleteMessageReaction } from "../http/message_reaction";
+import { createMessageReaction } from "../http/message_reaction";
 import { toast } from "sonner";
+import { deleteMessageReaction } from "../http/message_reaction";
 
 interface MessageProps {
-    id: string;
-    message: string;
-    votes: number;
-    answered?: boolean;
+  id: string
+  message: string
+  votes: number
+  answered?: boolean
 }
 
-export function Message({ id, message, votes, answered = false }: MessageProps) {
+export function Message({ 
+  id: messageId, 
+  message, 
+  votes, 
+  answered = false,
+}: MessageProps) {
+  const { roomId } = useParams()
+  const [hasReacted, setHasReacted] = useState(false)
 
-    console.log(id);
-    console.log(message);
-    console.log(votes);
-    console.log(answered);
+  if (!roomId) {
+    throw new Error('Messages components must be used within room page')
+  }
 
-    const { roomId } = useParams();
-
+  async function createMessageReactionAction() {
     if (!roomId) {
-        throw new Error("Messages component must be used within a Room page");
+      return
     }
 
-    const [hasVoted, setHasVoted] = useState(false);
-
-    async function handleVote() {
-        if (!roomId)
-            return;
-
-        console.log(hasVoted);
-
-        setHasVoted(!hasVoted);
-
-        if (!hasVoted)
-        {
-            try {
-                await createMessageReaction({ roomId, messageId: id })
-            } catch{
-                toast.error('An error occurred while voting. Please try again later.')
-            }
-        } else {
-            try {
-                await deleteMessageReaction({ roomId, messageId: id })
-            } catch{
-                toast.error('An error occurred while voting. Please try again later.')
-            }
-        }
-
+    try {
+      await createMessageReaction({ messageId, roomId })
+    } catch {
+      toast.error('Falha ao reagir mensagem, tente novamente!')
     }
 
-    return (
-        <>
-            <li data-answered={answered} className="ml-4 leading-relaxed text-zinc-100 data-[answered=true]:opacity-50 data-[answered=true]:pointer-events-none">
-                {message}
+    setHasReacted(true)
+  }
 
-                {hasVoted ? (
-                    <button 
-                    type="button" 
-                    onClick={handleVote}
-                    className="mt-3 flex items-center gap-2 text-orange-400 text-sm font-medium hover:text-orange-300"
-                    >
-                        <ArrowUp className="size-4" />
-                        Upvote ({votes})
-                    </button>
-                ) : (
-                    <button 
-                    type="button" 
-                    onClick={handleVote}
-                    className="mt-3 flex items-center gap-2 text-zinc-300 text-sm font-medium hover:text-zinc-200"
-                    >
-                        <ArrowUp className="size-4" />
-                        Upvote ({votes})
-                    </button>
-                )
-                
-                }
-            </li>
-        </>
-    )
+  async function removeMessageReactionAction() {
+    if (!roomId) {
+      return
+    }
+
+    try {
+      await deleteMessageReaction({ messageId, roomId })
+    } catch {
+      toast.error('Falha ao remover reação, tente novamente!')
+    }
+
+    setHasReacted(false)
+  }
+
+  return (
+    <li data-answered={answered} className="ml-4 leading-relaxed text-zinc-100 data-[answered=true]:opacity-50 data-[answered=true]:pointer-events-none">
+      {message}
+
+      {hasReacted ? (
+        <button 
+          type="button" 
+          onClick={removeMessageReactionAction} 
+          className="mt-3 flex items-center gap-2 text-orange-400 text-sm font-medium hover:text-orange-500"
+        >
+          <ArrowUp className="size-4" />
+          Curtir pergunta ({votes})
+        </button>
+      ) : (
+        <button 
+          type="button" 
+          onClick={createMessageReactionAction} 
+          className="mt-3 flex items-center gap-2 text-zinc-400 text-sm font-medium hover:text-zinc-300"
+        >
+          <ArrowUp className="size-4" />
+          Curtir pergunta ({votes})
+        </button>
+      )}
+    </li>
+  )
 }
