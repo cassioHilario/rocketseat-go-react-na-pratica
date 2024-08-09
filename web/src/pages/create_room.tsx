@@ -1,18 +1,29 @@
 import { ArrowRight } from 'lucide-react';
-
-import myLogo from '../assets/my-logo.png';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { createRoom } from '../http/create_room';
+import myLogo from '../assets/my-logo.png';
 
 export function CreateRoom() {
 
     const navigate = useNavigate();
 
-    function handleCreateRoom(data: FormData) {
+    async function handleCreateRoom(data: FormData) {
         const theme = data.get('theme')?.toString();
 
-        console.log(theme);
+        if (!theme) {
+            return;
+        }
 
-        navigate('/room/{theme}');
+        try{
+            const { roomId } = await createRoom({ theme });
+            toast.success('Room created successfully!');
+            navigate(`/room/${roomId}`);
+        }
+        catch(error){
+            toast.error('An error occurred while creating the room. Please try again later.');
+        }
     }
 
   return (

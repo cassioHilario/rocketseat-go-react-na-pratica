@@ -1,9 +1,11 @@
+import { Share2 } from "lucide-react"
 import { useParams } from "react-router-dom"
-import { ArrowRight, Share2 } from "lucide-react"
 import { toast } from "sonner"
 
+import { Suspense } from "react"
 import myLogo from '../assets/my-logo.png'
-import { Message } from "../components/message"
+import { CreateMessageForm } from "../components/create_message_form"
+import { Messages } from "../components/messages"
 
 export function Room() {
   const { roomId } = useParams()
@@ -41,33 +43,12 @@ export function Room() {
 
       <div className="h-px w-full bg-orange-200" />
 
-      <form 
-        className="flex items-center gap-2 bg-blue-900 p-2 rounded-xl border border-purple-800 ring-orange-400 ring-offset-2 ring-offset-blue-950 focus-within:ring-1"
-      >
-        <input 
-          type="text" 
-          name="theme"
-          placeholder="Ask anything"
-          autoComplete="off"
-          className="flex-1 text-sm bg-transparent mx-2 outline-none text-orange-100 placeholder:text-orange-500"
-        />
-
-        <button 
-          type="submit" 
-          className="bg-orange-400 text-orange-950 px-3 py-1.5 gap-1.5 flex items-center rounded-lg font-medium text-sm transition-colors hover:bg-orange-500"
-        >
-          Ask
-          <ArrowRight className="size-4" />
-        </button>
-      </form>
-
-      <ol className="list-decimal list-outside px-3 space-y-8">
-        <Message message="Proident quis eu magna id et incididunt nostrud." votes={112}/>
-        <Message message="Cillum eiusmod veniam ad cupidatat." votes={98}/>
-        <Message message="Aute voluptate aliquip incididunt cupidatat. Excepteur anim cupidatat incididunt laborum esse culpa magna magna qui in aute. Duis adipisicing in est enim incididunt. Irure mollit exercitation nulla laboris veniam enim adipisicing. Ipsum enim dolore in elit nulla proident quis. Enim ut ea aliqua occaecat reprehenderit est do ad do. Deserunt nostrud deserunt labore dolore aute." votes={85} answered/>
-        <Message message="Aliquip laborum ex et." votes={74}/>
-
-      </ol>
+      <CreateMessageForm />
+      
+      <Suspense fallback={<p>Loading Questions...</p>}>
+        <Messages />
+      </Suspense>
+      
     </div>
   )
 }
