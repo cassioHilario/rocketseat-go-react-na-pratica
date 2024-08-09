@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/cassioHilario/rocketseat-go-react-na-pratica/internal/store/pgstore"
+	"log/slog"
+	"net/http"
+	"sync"
+
+	"github.com/cassioHilario/rocketseat-go-react-na-pratica/websocket/internal/store/pgstore"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/jackc/pgx/v5"
-	"log/slog"
-	"net/http"
-	"sync"
 )
 
 type apiHandler struct {
@@ -284,7 +285,7 @@ func (h apiHandler) handleGetRoomMessages(w http.ResponseWriter, r *http.Request
 		http.Error(w, "Room not found", http.StatusNotFound)
 		return
 	}
-	if response == nil || len(response) == 0 {
+	if len(response) == 0 {
 		slog.Info("There are no messages in this room", "roomID", rawRoomID)
 		http.Error(w, "There are no messages in this room", http.StatusNotFound)
 		return
