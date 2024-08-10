@@ -6,11 +6,13 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/cassioHilario/rocketseat-go-react-na-pratica/internal/store/pgstore"
-
+	"github.com/cassioHilario/rocketseat-go-react-na-pratica/websocket/internal/store/pgstore"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+
+	"github.com/google/uuid"
+	_ "github.com/jackc/pgx/v5/pgconn"
+	_ "context"
 )
 
 func (h apiHandler) readRoom(
