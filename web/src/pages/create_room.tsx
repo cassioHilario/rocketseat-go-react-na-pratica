@@ -1,13 +1,14 @@
 import { ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { createRoom } from '../http/create_room';
 import myLogo from '../assets/my-logo.png';
+import { Suspense, useState } from 'react';
+import { Rooms } from '../components/rooms';
 
 export function CreateRoom() {
 
-    const navigate = useNavigate();
+    const [ seed, setSeed ] = useState(1);
 
     async function handleCreateRoom(data: FormData) {
         const theme = data.get('theme')?.toString();
@@ -18,8 +19,11 @@ export function CreateRoom() {
 
         try{
             const { roomId } = await createRoom({ theme });
+            if (!roomId) {
+                throw new Error();
+            }
             toast.success('Room created successfully!');
-            navigate(`/room/${roomId}`);
+            setSeed(Math.random());
         }
         catch(error){
             toast.error('An error occurred while creating the room. Please try again later.');
@@ -27,11 +31,11 @@ export function CreateRoom() {
     }
 
   return (
-    <main className='h-screen flex items-center justify-center px-4'>
-        <div className='max-w-[450px] flex flex-col gap-6'>
+    <div className='mx-auto max-w-[640px] flex flex-col gap-6 py-10 px-4'>
+        <div className='max-w-[450px] flex flex-col self-center gap-6'>
             <img src={myLogo} alt="A logo in a 3D shaped question mark" className='w-10 self-center' />
             <p className='leading-relaxed text-orange-300 text-center' >
-                Incididunt elit culpa culpa cupidatat fugiat reprehenderit et ad qui consectetur dolore ut.
+                Create here a room to ask questions and get answers from your audience
             </p>
             <form 
                 action={handleCreateRoom}
@@ -49,7 +53,11 @@ export function CreateRoom() {
                     <ArrowRight className='size-4' />
                 </button>
             </form>
-        </div>  
-    </main>
+        </div>
+        <div className='h-px w-full bg-orange-200' />
+            <Suspense fallback={<p>Loading Rooms...</p>}>
+                <Rooms key={seed}/>
+            </Suspense>
+    </div>
   )
 }
