@@ -39,8 +39,8 @@ WHERE room_id = $1;
 
 -- name: InsertMessage :one
 INSERT INTO messages
-    ( "room_id", "message" ) VALUES
-    ( $1, $2 )
+    ( "room_id", "message", "reaction_count", "answered" ) VALUES
+    ( $1, $2, $3, $4 )
 RETURNING "id";
 
 -- name: ReactToMessage :one

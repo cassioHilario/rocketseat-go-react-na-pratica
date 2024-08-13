@@ -82,8 +82,10 @@ const (
 )
 
 type MessageMessageCreated struct {
-	ID      string `json:"id"`
-	Message string `json:"message"`
+	ID      		string 	`json:"id"`
+	Message 		string 	`json:"message"`
+	ReactionCount 	int64 	`json:"reaction_count"`
+	Answered 		bool 	`json:"answered"`
 }
 
 type MessageReactionAdded struct {
@@ -230,7 +232,9 @@ func (h apiHandler) handleCreateRoomMessage(w http.ResponseWriter, r *http.Reque
 	}
 
 	type _body struct {
-		Message string `json:"message"`
+		Message  		string 	`json:"message"`
+		ReactionCount 	int64 	`json:"reaction_count"`
+		Answered 		bool 	`json:"answered"`
 	}
 	var body _body
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -238,7 +242,7 @@ func (h apiHandler) handleCreateRoomMessage(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	messageID, err := h.q.InsertMessage(r.Context(), pgstore.InsertMessageParams{RoomID: roomID, Message: body.Message})
+	messageID, err := h.q.InsertMessage(r.Context(), pgstore.InsertMessageParams{RoomID: roomID, Message: body.Message, ReactionCount: body.ReactionCount, Answered: body.Answered})
 	if err != nil {
 		slog.Error("Failed to insert message to database", "error", err)
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
@@ -268,6 +272,8 @@ func (h apiHandler) handleCreateRoomMessage(w http.ResponseWriter, r *http.Reque
 		Value: MessageMessageCreated{
 			ID:      messageID.String(),
 			Message: body.Message,
+			ReactionCount: body.ReactionCount,
+			Answered: body.Answered,
 		},
 	})
 

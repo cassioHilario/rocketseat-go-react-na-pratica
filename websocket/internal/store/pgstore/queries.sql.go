@@ -116,18 +116,25 @@ func (q *Queries) GetRooms(ctx context.Context) ([]Room, error) {
 
 const insertMessage = `-- name: InsertMessage :one
 INSERT INTO messages
-    ( "room_id", "message" ) VALUES
-    ( $1, $2 )
+    ( "room_id", "message", "reaction_count", "answered" ) VALUES
+    ( $1, $2, $3, $4 )
 RETURNING "id"
 `
 
 type InsertMessageParams struct {
-	RoomID  uuid.UUID
-	Message string
+	RoomID        uuid.UUID
+	Message       string
+	ReactionCount int64
+	Answered      bool
 }
 
 func (q *Queries) InsertMessage(ctx context.Context, arg InsertMessageParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, insertMessage, arg.RoomID, arg.Message)
+	row := q.db.QueryRow(ctx, insertMessage,
+		arg.RoomID,
+		arg.Message,
+		arg.ReactionCount,
+		arg.Answered,
+	)
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err

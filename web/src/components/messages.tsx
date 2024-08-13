@@ -1,8 +1,8 @@
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import { useMessagesWebSockets } from "../hooks/use-messages-web-sockets";
 import { getRoomMessages } from "../http/get_room_messages";
 import { Message } from "./message";
-import { useMessagesWebSockets } from "../hooks/use-messages-web-sockets";
 
 export function Messages() {
 
